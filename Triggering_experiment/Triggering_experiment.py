@@ -39,7 +39,7 @@ def buildSQL_sliceTime_waveform(t_b, t_e, lon_min, lon_max, lat_min, lat_max):
     t_1 = t_b.strftime("%Y-%m-%d %H:%M:%S") 
     t_2 = t_e.strftime("%Y-%m-%d %H:%M:%S") 
     print(t_1,t_2)
-    sql = "select deviceId,triggerTimer,latitude,longitude,accuracy,altitude,triggerFrom from waveform where triggerFrom=6 and latitude < " + str(lat_max) + " and latitude > " + str(lat_min) + " and longitude < " + str(lon_max) + " and longitude > " + str(lon_min) + " and triggerTimer between UNIX_TIMESTAMP(\'" + t_1 + "\')*1000 and UNIX_TIMESTAMP(\'" + t_2 + "\')*1000;"
+    sql = "select * from waveform where triggerFrom=6 and latitude < " + str(lat_max) + " and latitude > " + str(lat_min) + " and longitude < " + str(lon_max) + " and longitude > " + str(lon_min) + " and triggerTimer between UNIX_TIMESTAMP(\'" + t_1 + "\')*1000 and UNIX_TIMESTAMP(\'" + t_2 + "\')*1000;"
 
     return sql
 
@@ -157,7 +157,7 @@ def main(region_code='LA'):
     #Experiment set up
     local_tz = pytz.timezone("US/Pacific")
     t0_start = datetime.today() #start time of the experiment 
-    runtime = 12*3600 #length of time to run the experiment
+    runtime = 24*3600 #length of time to run the experiment
     trigger_interval = 40*60 #how often we will send command to trigger new phones
     nhours=2 #This is the number of hours before the search was launched in which to search for phones that sent HB data
     endtime = t0_start + timedelta(seconds=runtime)
