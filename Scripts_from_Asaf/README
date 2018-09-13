@@ -1,0 +1,6 @@
+cal_noise.py : Contains functionality to calculate noise amplitiudes from MyShake data on a regular grid (I think). Also contains 
+various other functions that don't appear to be related to this task. It looks like all the data is read in from a binary file
+
+get_trig_wf : Get myshake waveforms from queries to sensordata database. I have an alternative script for this
+
+write_new-hdf5 : Writes a hdf5 file from metadata obtained from the myshake database
