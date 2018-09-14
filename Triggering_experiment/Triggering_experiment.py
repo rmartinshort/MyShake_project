@@ -20,6 +20,9 @@ sys.path.append('/work/myshake/rmartin/asaf_scripts/get_data/functions/')
 #import from Asaf's functions
 from functions_io import *
 
+#import functionality to query mongoDB
+from MongoDBtrigger import read_triggers_mongoDB
+
     
 def buildSQL_sliceTime_hbHistory(t0, t1,lat_min,lat_max,lon_min,lon_max):
 
@@ -142,7 +145,7 @@ def main(region_code='LA'):
 
     trigger_script = 'rec_start_rms.sh'
 
-    regions = {'LA':[33,34.5,-118.7,-117.2],'SFbay':[36.921,38.494,-123.128,-121.387]}
+    regions = {'LA':[33,34.5,-118.7,-117.2,27016],'SFbay':[36.921,38.494,-123.128,-121.387,27017]}
 
     #Set up the coordinates of the region we wish to investiage
     region = regions[region_code]
@@ -150,6 +153,8 @@ def main(region_code='LA'):
     lat_max = region[1]
     lon_min = region[2]
     lon_max = region[3]
+    #Port changes with region!
+    mongodb_port = region[4]
 
     #The region we are trying to pull phones from
     print('Region: %s [%s/%s/%s/%s]' %(region_code,lat_min,lat_max,lon_min,lon_max))
@@ -201,8 +206,14 @@ def main(region_code='LA'):
 
         #Select only the phones that we planned to trigger
         all_triggered_phones = all_triggered_phones[all_triggered_phones['deviceId'].isin(Planned_triggered_ids)]
-        print(all_triggered_phones)
 
+        #Get a list of the devices that triggered, ready for querying the mongodb
+        devices_list = list(all_triggered_phones['deviceId'].values)
+        mongodb_triggers = read_triggers_mongoDB(password_file,trigger_send_time,t2_local,devices_list,port=mongodb_port)
+
+        print(mongodb_triggers)
+
+        mongodb_triggers.to_csv("MongoDBtrigger_%s_%s.csv" %(trigger_send_time.strftime('%s'),t2_local.strftime('%s')))
         all_triggered_phones.to_csv("Devices_triggered_%s_%s.csv" %(trigger_send_time.strftime('%s'),t2_local.strftime('%s')))
 
         #Wait until its time to trigger again
@@ -212,7 +223,7 @@ def main(region_code='LA'):
         currenttime = datetime.now()
 
 if __name__ == '__main__':
-    main()
+    main(region_code='SFbay')
 
         
          
